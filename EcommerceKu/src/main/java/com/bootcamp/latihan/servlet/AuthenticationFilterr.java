@@ -7,7 +7,7 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.*;
 
 @WebFilter("/mvc/products")
-public class AuthenticationFilter implements Filter {
+public class AuthenticationFilterr implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)

@@ -35,10 +35,10 @@
 				%>
 
 				<a class="btn btn-primary" style="margin-bottom: 10px;"
-					href="<c:url value='/mvc/products?action=cart' />">My Cart</a> <a
+					href="<c:url value='/mvc/carts?action=mycart' />">My Cart</a> <a
 					class="btn btn-danger"
 					style="margin-bottom: 5px; float: inline-end;"
-					href="<c:url value='/mvc/products?action=logout' />">Logout</a>
+					href="<c:url value='/mvc/carts?action=logout' />">Logout</a>
 
 				<c:forEach var="product" items="${products}" varStatus="status">
 					<c:if test="${status.index % 2 == 0}">
@@ -47,7 +47,7 @@
 					<div class="col-md-6 mb-4">
 						<div class="card">
 							<div class="card-body">
-								<form action="<c:url value='/mvc/products?action=addToCart' />"
+								<form action="<c:url value='/mvc/carts?action=addToCart' />"
 									method="post">
 									<div class="form-group row">
 										<label for="name" class="col-sm-2 col-form-label">Name</label>

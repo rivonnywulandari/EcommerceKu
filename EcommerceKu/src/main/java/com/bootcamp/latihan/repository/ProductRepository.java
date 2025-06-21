@@ -98,7 +98,7 @@ public class ProductRepository {
 	}
 	
 	public void order(Order order) {
-	    String sql = "INSERT INTO orders_table (product_id, product_name, price, quantity) VALUES (?, ?, ?, ?)";
+	    String sql = "INSERT INTO orders_table (product_id, product_name, product_type, price, quantity) VALUES (?, ?, ?, ?, ?)";
 
 	    try {
 	        PreparedStatement stmt = conn.prepareStatement(sql);
@@ -106,8 +106,9 @@ public class ProductRepository {
 	        for (OrderItem item : order.getItems()) {
 	            stmt.setInt(1, item.getId());
 	            stmt.setString(2, item.getName());
-	            stmt.setInt(3, item.getPrice());
-	            stmt.setInt(4, item.getQuantity());
+	            stmt.setString(3, item.getType());
+	            stmt.setInt(4, item.getPrice());
+	            stmt.setInt(5, item.getQuantity());
 	            stmt.executeUpdate(); 
 	        }
 

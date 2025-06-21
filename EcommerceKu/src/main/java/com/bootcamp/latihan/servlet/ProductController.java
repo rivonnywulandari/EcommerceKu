@@ -29,26 +29,26 @@ public class ProductController extends HttpServlet {
 		String action = req.getParameter("action");
 		String uri = req.getRequestURI();
 		if ("form-view".equals(action)) {
-			 HttpSession session = req.getSession(false);
-			 String username = (session != null) ? (String) session.getAttribute("username") : null;
+			HttpSession session = req.getSession(false);
+			String username = (session != null) ? (String) session.getAttribute("username") : null;
 
 			if (!"admin123".equals(username)) {
-		        resp.sendRedirect("products?action=user");
-		        return;
-		    }
+				resp.sendRedirect("products?action=user");
+				return;
+			}
 
 			RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/jsp/product_form.jsp");
 			dispatcher.forward(req, resp);
 		} else if ("view".equals(action)) {
-			
-			 HttpSession session = req.getSession(false);
-			 String username = (session != null) ? (String) session.getAttribute("username") : null;
+
+			HttpSession session = req.getSession(false);
+			String username = (session != null) ? (String) session.getAttribute("username") : null;
 
 			if (!"admin123".equals(username)) {
-		        resp.sendRedirect("products?action=user");
-		        return;
-		    }
-			
+				resp.sendRedirect("products?action=user");
+				return;
+			}
+
 			String idParam = req.getParameter("id");
 			if (idParam != null) {
 				try {
@@ -98,44 +98,6 @@ public class ProductController extends HttpServlet {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-		} else if ("user".equals(action)) {
-
-			ProductService productService;
-			try {
-				productService = new ProductService();
-				List<Product> products = productService.findAll();
-
-				req.setAttribute("products", products);
-				HttpSession session = req.getSession();
-				session.setAttribute("message", "Selamat Datang Admin");
-
-				RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/jsp/product_list.jsp");
-				dispatcher.forward(req, resp);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-
-		else if ("cart".equals(action))
-
-		{
-			HttpSession session = req.getSession();
-			List<OrderItem> cart = (List<OrderItem>) session.getAttribute("cart");
-
-			int total = 0;
-			if (cart != null) {
-				for (OrderItem item : cart) {
-					total += item.getPrice() * item.getQuantity();
-				}
-			} else {
-				req.setAttribute("message", "Keranjang Anda kosong.");
-
-			}
-
-			req.setAttribute("totalPrice", total);
-
-			RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/jsp/cart.jsp");
-			dispatcher.forward(req, resp);
 		}
 
 		else if ("logout".equals(action)) {
@@ -207,7 +169,7 @@ public class ProductController extends HttpServlet {
 				} else if ("alia".equals(userName) && "alia".equals(userPassword)) {
 					session.setAttribute("username", userName);
 					req.setAttribute("products", products);
-					resp.sendRedirect("products?action=user");
+					resp.sendRedirect("carts");
 				} else {
 					session.setAttribute("error", "Username atau password salah.");
 					resp.sendRedirect("products");
@@ -220,67 +182,7 @@ public class ProductController extends HttpServlet {
 			}
 		}
 
-		else if ("addToCart".equals(action)) {
-			try {
-				int id = Integer.parseInt(req.getParameter("id"));
-				String name = req.getParameter("name");
-				String type = req.getParameter("type");
-				int price = Integer.parseInt(req.getParameter("price"));
-				int quantity = Integer.parseInt(req.getParameter("quantity"));
-
-				OrderItem item = new OrderItem(id, name, type, price, quantity);
-				HttpSession session = req.getSession();
-				List<OrderItem> cart = (List<OrderItem>) session.getAttribute("cart");
-
-				if (cart == null) {
-					cart = new ArrayList<>();
-				}
-
-				boolean itemExists = false;
-				for (OrderItem existing : cart) {
-					if (existing.getId() == id) {
-						existing.setQuantity(existing.getQuantity() + quantity);
-						itemExists = true;
-						break;
-					}
-				}
-
-				if (!itemExists) {
-					cart.add(item);
-				}
-
-				session.setAttribute("cart", cart);
-				resp.sendRedirect("products?action=user");
-
-			} catch (NumberFormatException e) {
-				resp.getWriter().write("Input tidak valid.");
-			}
-
-		} 
-		else if ("placeOrder".equals(action)) {
-			HttpSession session = req.getSession();
-			List<OrderItem> cart = (List<OrderItem>) session.getAttribute("cart");
-
-			if (cart != null && !cart.isEmpty()) {
-				Order order = new Order();
-				for (OrderItem item : cart) {
-					order.addItem(item);
-				}
-
-				try {
-					ProductService service = new ProductService();
-					service.order(order);
-					session.removeAttribute("cart");
-					resp.sendRedirect("products?action=user");
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-
-			} else {
-				resp.getWriter().write("Cart kosong.");
-			}
-
-		} else {
+		else {
 			// Default add product
 			try {
 				String name = req.getParameter("name");
